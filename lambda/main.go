@@ -54,6 +54,7 @@ func Handler(ctx context.Context, evt json.RawMessage) (string, error) {
 	backendOpt := os.Getenv("BUILDKITE_BACKEND")
 	queue := os.Getenv("BUILDKITE_QUEUE")
 	clwDimensions := os.Getenv("BUILDKITE_CLOUDWATCH_DIMENSIONS")
+	clwRoleARN := os.Getenv("BUILDKITE_CLOUDWATCH_ROLE_ARN")
 	quietString := os.Getenv("BUILDKITE_QUIET")
 	quiet := quietString == "1" || quietString == "true"
 
@@ -117,7 +118,7 @@ func Handler(ctx context.Context, evt json.RawMessage) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		b = backend.NewCloudWatchBackend(awsRegion, dimensions)
+		b = backend.NewCloudWatchBackend(awsRegion, clwRoleARN, dimensions)
 	}
 
 	res, err := c.Collect()
