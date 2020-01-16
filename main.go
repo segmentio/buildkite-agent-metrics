@@ -35,7 +35,6 @@ func main() {
 		prometheusAddr = flag.String("prometheus-addr", ":8080", "Prometheus metrics transport bind address")
 		prometheusPath = flag.String("prometheus-path", "/metrics", "Prometheus metrics transport path")
 		clwRegion      = flag.String("cloudwatch-region", "", "AWS Region to connect to, defaults to $AWS_REGION or us-east-1")
-		clwRoleARN     = flag.String("cloudwatch-role-arn", "", "If supplied, role to assume when emitting metrics")
 		clwDimensions  = flag.String("cloudwatch-dimensions", "", "Cloudwatch dimensions to index metrics under, in the form of Key=Value, Other=Value")
 		gcpProjectID   = flag.String("stackdriver-projectid", "", "Specify Stackdriver Project ID")
 		nrAppName      = flag.String("newrelic-app-name", "", "New Relic application name for metric events")
@@ -76,7 +75,7 @@ func main() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		bk = backend.NewCloudWatchBackend(region, *clwRoleARN, dimensions)
+		bk = backend.NewCloudWatchBackend(region, dimensions)
 	case "statsd":
 		bk, err = backend.NewStatsDBackend(*statsdHost, *statsdTags)
 		if err != nil {

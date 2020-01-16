@@ -5,8 +5,6 @@ import (
 	"log"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
@@ -42,17 +40,15 @@ func ParseCloudWatchDimensions(ds string) ([]CloudWatchDimension, error) {
 
 // CloudWatchBackend sends metrics to AWS CloudWatch
 type CloudWatchBackend struct {
-	roleARN    string
 	region     string
 	dimensions []CloudWatchDimension
 }
 
 // NewCloudWatchBackend returns a new CloudWatchBackend with optional dimensions
-func NewCloudWatchBackend(region string, roleARN string, dimensions []CloudWatchDimension) *CloudWatchBackend {
+func NewCloudWatchBackend(region string, dimensions []CloudWatchDimension) *CloudWatchBackend {
 	return &CloudWatchBackend{
 		region:     region,
 		dimensions: dimensions,
-		roleARN:    roleARN,
 	}
 }
 
@@ -64,14 +60,7 @@ func (cb *CloudWatchBackend) Collect(r *collector.Result) error {
 		return err
 	}
 
-	var svc *cloudwatch.CloudWatch
-	if cb.roleARN != "" {
-		creds := stscreds.NewCredentials(sess, cb.roleARN)
-		svc = cloudwatch.New(sess, &aws.Config{Credentials: creds})
-	} else {
-		svc = cloudwatch.New(sess)
-	}
-
+	svc := cloudwatch.New(sess)
 	metrics := []*cloudwatch.MetricDatum{}
 
 	// Set the baseline org dimension
