@@ -4,7 +4,7 @@ WORKDIR /go/src/github.com/buildkite/buildkite-agent-metrics/
 COPY . .
 RUN GO111MODULE=on GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o buildkite-agent-metrics .
 
-FROM alpine:3.9
+FROM alpine:3.11
 RUN apk update && apk add curl ca-certificates
 COPY --from=chamber /chamber /bin/chamber
 COPY --from=builder /go/src/github.com/buildkite/buildkite-agent-metrics/buildkite-agent-metrics .
